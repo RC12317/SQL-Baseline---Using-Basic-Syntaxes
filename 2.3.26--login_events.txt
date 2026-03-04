@@ -1,0 +1,24 @@
+2.3.26
+
+
+Baseline for Adam:
+DB: login_events
+
+Credit: Adam P.
+
+SELECT profileName,
+       timestamp,
+       COUNT(DISTINCT ip) AS IP,
+       COUNT(DISTINCT email) AS email
+FROM login_events
+GROUP BY hour_utc
+ORDER BY IP ASC;
+
+
+SELECT profileName,
+       timestamp,
+       COUNT(DISTINCT ip) AS IP,
+       COUNT(DISTINCT email) AS email
+FROM login_events
+GROUP BY userAgent
+ORDER BY IP ASC;

@@ -1,0 +1,51 @@
+1.7.26
+
+Baseline for Dazn:
+DB: DuckDB Explorer
+
+Baseline:
+-Based on IP
+SELECT userId,
+       COUNT(DISTINCT ipAddress) AS IP 		--DISTINCT can be used like so
+FROM device_register
+GROUP BY userId
+HAVING IP > 5;					--Filters in group
+
+-Based on New Device:
+SELECT newDeciveLogin,
+       COUNT(*)
+FROM device_register
+WHERE newDeviceLogin = True
+GROUP BY userId
+HAVING COUNT(*) > 1;  --to indicate how many new devices an user login with 
+
+-Based on OS Version:
+SELECT userId, 
+       COUNT(DISTINCT osVersion) AS OS_Version_Count
+FROM device_register
+GROUP BY userId
+HAVING OS_Version_Count > 1;		--It's saying having more than 1 OS version | If we use 2, 
+					it's saying that is more than 2 OS version being detected for the user |It's filtering by group
+--Based on Time Zone activity
+SELECT userId, 
+       COUNT(DISTINCT timeZone) AS TimeZoneCount
+FROM device_register
+GROUP BY userId
+HAVING TimeZoneCount > 2;
+
+--Based on Geographical anomalies
+SELECT userId,
+       countryCode, 
+       COUNT(DISTINCT geolocatedCountryCode) AS Total
+FROM device_register
+GROUP BY countryCode
+ORDER BY countryCode DESC
+HAVING Total > 2;		--it's saying more than 2 different countries
+
+***NOTE:*** 
+Originally had:
+SELECT countryCode, 
+       COUNT(geolocatedCountryCode) 
+FROM device_register
+GROUP BY countryCode
+ORDER BY countryCode DESC

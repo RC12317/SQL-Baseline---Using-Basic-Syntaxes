@@ -1,0 +1,62 @@
+1.13.26
+Credit: Adam Pickford
+
+
+BASELINE FOR DIGITAL FINGERPRINT AKA PATTERNS
+--Based line(1)
+SELECT ja4fingerprint, 
+       pct_blocked,
+CASE		
+    WHEN COUNT(ja4fingerprint) > 2000 THEN 'ALERT'
+    WHEN pct_blocked < 70 THEN 'WARNING' 	
+    WHEN UPDATE_AT > '2026-01-12 00:00:00.001+00:00' THEN 'BAD'
+ELSE AS 'Good'
+FROM signings_by_hour_ja4
+GROUP BY ja4fingerprint, 
+         pct_blocked,
+	 UPDATE_AT,
+***This one is good***
+
+--ANOTHER BASE WE CAN GENERATE(2):
+SELECT time_utc,
+       COUNT(ja4Fingerprint) AS Fingerprints		--Wrong aggregate
+FROM singings_by_hour_andja4			--Typo on db's name
+WHERE ja4Fingerprint = 'tl3d1515h2_8daaf6152771_de4a06bb823'
+GROUP BY time_utc
+
+--Correct version:
+SELECT time_utc,
+       SUM(count) AS Hits
+FROM singings_by_hour_and_ja4
+WHERE ja4Fingerprint = 'tl3d1515h2_8daaf6152771_de4a06bb823'
+GROUP BY time_utc
+
+--BASELINE BASED ON THE FOLLOWING PARAMETERS:
+JA4_FINGERPRINT VARCHAR(100)
+TOTAL_REQUESTS INT
+AVG_%_BLOCKED INT
+JA4_RULE_BLOCKS INT
+CLASSIFICATION VARCHAR(50)
+
+
+SELECT COUNT(JA4_FINGERPRINT),
+        CLASSIFICATION
+FROM singings_by_hour_and_ja4
+WHERE CLASSIFICATION = 'CRITICAL'
+GROUP BY JA4_FINGERPRINT;
+**Logic in here mismatches**
+
+	CORRECT VERSIONS:
+--Count Critical rows per fingerprint--
+SELECT JA4_FINGERPRINT,
+       COUNT(*) AS Critical_count
+FROM singings_by_hour_and_ja4
+WHERE CLASSIFICATION = 'Critical'
+GROUP BY JA4_FINGERPRINT;
+
+--How many critical rows total--
+SELECT COUNT(*) AS critical_count
+FROM singings_by_hou_and_ja4
+WHERE CLASSICIATION = 'Critical';
+
+
